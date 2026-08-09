@@ -6,7 +6,10 @@ def pr_field(array):
     for i in range(9):
         print(i+1," ",end="")
         for j in range(9):
-            print(int(array[i][j]),end=" ")
+            if array[i][j] == 0:
+                print("-", end=" ")
+            elif array[i][j] > 0 and array[i][j] < 10:
+                print(int(array[i][j]),end=" ")
             if j == 2 or j == 5:
                 print("|",end=" ")
             elif j == 8:
