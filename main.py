@@ -15,9 +15,30 @@ def pr_field(array):
             print("   ---------------------")
 def main():
     wg = np.zeros([9,9])
-    wg[1] = 1
-    wg[3] = 3
+    for i in range(9):
+        wg[i] = i
     pr_field(wg)
+    while True:
+        zeile = int(input("Zeile: ")) - 1
+        spalte = int(input("Spalte: ")) - 1
+        print(wg[:, spalte])
+        eingabe = int(input("Eingabe: "))
+        if np.equal(wg[zeile], eingabe).any() == True:
+            print("Fehlerhafte Eingabe")
+            pr_field(wg)
+        elif np.equal(wg[zeile], eingabe).any() == False:
+            if np.equal(wg[:, spalte], eingabe).any() == True:
+                print("Fehlerhafte Eingabe")
+                pr_field(wg)
+            elif np.equal(wg[:, spalte], eingabe).any() == False:
+                wg[zeile][spalte] = eingabe
+                pr_field(wg)
+            else:
+                print("Fehler 2.if")
+        else:
+            print("Fehler 1. if")
+
+
 
 if __name__ == "__main__":
     main()
