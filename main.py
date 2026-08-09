@@ -24,15 +24,15 @@ def is_int(value: str) -> bool:
         return False
 def innit():
     wg = np.zeros([9,9])
-    wg[0] = [7,5,4, 0,9,3, 2,0,0]
-    wg[1] = [3,1,8, 0,6,0, 0,9,5]
-    wg[2] = [6,9,2, 0,7,0, 0,0,0]
+    wg[0] = [7,5,4, 0,9,3, 2,6,1]
+    wg[1] = [3,1,8, 2,6,4, 7,9,5]
+    wg[2] = [6,9,2, 1,7,5, 8,4,3]
     wg[3] = [9,2,3, 4,8,7, 1,5,6]
     wg[4] = [1,4,8, 6,5,2, 3,7,9]
     wg[5] = [5,7,6, 9,3,1, 4,2,8]
-    wg[6] = [2,3,7, 0,1,0, 9,0,4]
-    wg[7] = [1,8,5, 7,4,9, 0,0,2]
-    wg[8] = [4,6,9, 0,2,0, 5,0,7]
+    wg[6] = [2,3,7, 5,1,6, 9,8,4]
+    wg[7] = [1,8,5, 7,4,9, 6,3,2]
+    wg[8] = [4,6,9, 3,2,8, 5,1,7]
     pr_field(wg)
     return wg
 def inpuut(wg):
@@ -64,20 +64,21 @@ def inpuut(wg):
         wg[zeile,spalte] = eingabe
         pr_field(wg)
     return wg
-def check(wg):
+def checkk(wg):
     for i in range(9):
         for j in range(9):
-            if np.equal(wg[i], j + 1).any() == True:
+            if any((2 * x) in set(wg[i]) for x in wg[i]) == True:
                 print(f"Fehlerhafte Eingabe in Zeile {i+1}")
                 check1 = False
-            elif np.equal(wg[i], j + 1).any() == False:
-                if np.equal(wg[:, i], j + 1).any() == True:
+            elif any((2 * x) in set(wg[i]) for x in wg[i]) == False:
+                if any((2 * x) in set(wg[:,i]) for x in wg[i]) == True:
                     print(f"Fehlerhafte Eingabe in Spalte {i+1}")
-                elif np.equal(wg[:, i], j + 1).any() == False:
+                elif any((2 * x) in set(wg[:,i]) for x in wg[i]) == False:
                     check1 = True
     for m in range(3):
         for n in range(3):
-            wg_kl = wg[m*3:m*3+2][n*3:n*3+2]
+            wg_kl = wg[m*3:m*3+3,n*3:n*3+3]
+            wg_kl = wg_kl.flatten()
             check2_kl = any((2 * x) in set(wg_kl) for x in wg_kl)
             if check2_kl == True:
                 print(f"Fehler im 3x3 Grid Zeile {m+1} und Spalte {n+1}")
@@ -95,7 +96,7 @@ def main():
     while True:
         wg = inpuut(wg)
         if np.all(wg != 0):
-            check = check(wg)
+            check = checkk(wg)
             if check == True:
                 print("Eyyy alles richtig!!")
                 break
