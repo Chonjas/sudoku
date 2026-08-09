@@ -61,39 +61,31 @@ def inpuut(wg):
         wg[zeile,spalte] = 0
         pr_field(wg)
     else:
-        if np.equal(wg[zeile], eingabe).any() == True:
-            print("Fehlerhafte Eingabe")
-            pr_field(wg)
-        elif np.equal(wg[zeile], eingabe).any() == False:
-            if np.equal(wg[:, spalte], eingabe).any() == True:
-                print("Fehlerhafte Eingabe")
-                pr_field(wg)
-            elif np.equal(wg[:, spalte], eingabe).any() == False:
-                wg[zeile][spalte] = eingabe
-                pr_field(wg)
-            else:
-                print("Fehler 2.if")
-        else:
-            print("Fehler 1. if")
+        wg[zeile,spalte] = eingabe
+        pr_field(wg)
     return wg
 def check(wg):
     for i in range(9):
         for j in range(9):
             if np.equal(wg[i], j + 1).any() == True:
                 print(f"Fehlerhafte Eingabe in Zeile {i+1}")
-                pr_field(wg)
-                check = False
+                check1 = False
             elif np.equal(wg[i], j + 1).any() == False:
                 if np.equal(wg[:, i], j + 1).any() == True:
                     print(f"Fehlerhafte Eingabe in Spalte {i+1}")
-                    pr_field(wg)
                 elif np.equal(wg[:, i], j + 1).any() == False:
-                    pr_field(wg)
-                    check = True
-                else:
-                    print("Fehler 2.if")
-            else:
-                print("Fehler 1. if")
+                    check1 = True
+    for m in range(3):
+        for n in range(3):
+            wg_kl = wg[m*3:m*3+2][n*3:n*3+2]
+            check2_kl = any((2 * x) in set(wg_kl) for x in wg_kl)
+            if check2_kl == True:
+                print(f"Fehler im 3x3 Grid Zeile {m+1} und Spalte {n+1}")
+                check2 = False
+    if check1 == True and check2 == True:
+        check = True
+    else:
+        check = False
     return check
 
 
@@ -107,6 +99,8 @@ def main():
             if check == True:
                 print("Eyyy alles richtig!!")
                 break
+            if check == False:
+                pr_field(wg)
 
 
 
