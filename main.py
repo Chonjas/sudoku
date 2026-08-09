@@ -12,7 +12,7 @@ def pr_field(array):
             elif j == 8:
                 print("")
         if i == 2 or i == 5:
-            print("   ---------------------")
+            print("   --------------------- ")
 def main():
     wg = np.zeros([9,9])
     wg[1] = 1
