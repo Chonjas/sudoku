@@ -16,13 +16,14 @@ def pr_field(array):
                 print("")
         if i == 2 or i == 5:
             print("   ---------------------")
+    print("")
 def is_int(value: str) -> bool:
     try:
         int(value)
         return True
     except ValueError:
         return False
-def innit():
+def innitnd():
     wg = np.zeros([9,9])
     wg[0] = [7,5,4, 0,9,3, 2,6,1]
     wg[1] = [3,1,8, 2,6,4, 7,9,5]
@@ -35,6 +36,20 @@ def innit():
     wg[8] = [4,6,9, 3,2,8, 5,1,7]
     pr_field(wg)
     return wg
+def innit():
+    wg = np.zeros([9,9])
+    wg[0] = [0,0,4, 0,9,3, 0,0,0]
+    wg[1] = [3,0,0, 0,6,0, 0,9,5]
+    wg[2] = [6,0,2, 0,7,0, 0,0,0]
+    wg[3] = [0,0,0, 4,8,0, 1,5,6]
+    wg[4] = [8,0,0, 6,5,2, 0,7,0]
+    wg[5] = [5,0,0, 0,0,1, 4,0,0]
+    wg[6] = [0,3,0, 0,0,0, 9,0,4]
+    wg[7] = [1,8,0, 7,0,0, 0,0,2]
+    wg[8] = [0,0,9, 0,0,0, 5,0,0]
+    wg = wg.astype(int)
+    return wg
+
 def inpuut(wg):
     while True:
         zeile = input("Zeile: ")
@@ -64,16 +79,16 @@ def inpuut(wg):
         wg[zeile,spalte] = eingabe
         pr_field(wg)
     return wg
-def checkk(wg):
+def checkkk(wg): #dead
     for i in range(9):
-        for j in range(9):
-            if any((2 * x) in set(wg[i]) for x in wg[i]) == True:
+        for j in range(9):  # 2. for schleife unnötig? vllt fehler
+            if any((2 * x) in set(wg[i]) for x in wg[i]) == False:
                 print(f"Fehlerhafte Eingabe in Zeile {i+1}")
                 check1 = False
-            elif any((2 * x) in set(wg[i]) for x in wg[i]) == False:
-                if any((2 * x) in set(wg[:,i]) for x in wg[i]) == True:
+            elif any((2 * x) in set(wg[i]) for x in wg[i]) == True:
+                if any((2 * x) in set(wg[:,i]) for x in wg[i]) == False:
                     print(f"Fehlerhafte Eingabe in Spalte {i+1}")
-                elif any((2 * x) in set(wg[:,i]) for x in wg[i]) == False:
+                elif any((2 * x) in set(wg[:,i]) for x in wg[i]) == True:
                     check1 = True
     for m in range(3):
         for n in range(3):
@@ -88,19 +103,45 @@ def checkk(wg):
     else:
         check = False
     return check
-
+def checkk(wg):
+    check1 = np.zeros([9,1], dtype=bool)
+    check2 = np.zeros([9,1], dtype=bool)
+    check3 = np.zeros([3,3], dtype=bool)
+    for i in range(9):
+        if np.sum(wg[i,:]) == 45:
+            check1[i] = True
+        else:
+            print(f"Fehler in Zeile {i+1}")
+    for i in range(9):
+        if np.sum(wg[:,i]) == 45:
+            check2[i] = True
+        else:
+            print(f"Fehler in Spalte {i+1}")
+    for m in range(3):
+        for n in range(3):
+            wg_kl = wg[m*3:m*3+3,n*3:n*3+3]
+            if np.sum(wg_kl) == 45:
+                check3[m,n] = True
+            else:
+                print(f"Fehler in 3x3 Grid {m+1}, {n+1}")
+    if check1.all() == True and check2.all() == True and check3.all() == True:
+        check = 1
+    else:
+        check = 0
+    return check
 
 
 def main():
     wg = innit()
+    pr_field(wg)
     while True:
         wg = inpuut(wg)
         if np.all(wg != 0):
             check = checkk(wg)
-            if check == True:
+            if check == 1:
                 print("Eyyy alles richtig!!")
                 break
-            if check == False:
+            if check == 0:
                 pr_field(wg)
 
 
