@@ -1,5 +1,16 @@
 import numpy as np
 import json
+import sys
+def quit(wg):
+    data = read_json()
+    data["wg"] = wg.tolist()
+    save_json(data)
+    sys.exit()
+def back_to_menu(wg):
+    data = read_json()
+    data["wg"] = wg.tolist()
+    save_json(data)
+    main()
 def pr_field(array):
     print("")
     print("   1 2 3   4 5 6   7 8 9")
@@ -49,7 +60,6 @@ def innit():
     wg[8] = [0,0,9, 0,0,0, 5,0,0]
     wg = wg.astype(int)
     return wg
-
 def inpuut(wg):
     while True:
         zeile = input("Zeile: ")
@@ -57,27 +67,40 @@ def inpuut(wg):
             zeile = int(zeile) -1
             if zeile >= 0 and zeile <= 8:
                 break
+        elif zeile == "q":
+            quit(wg)
+        elif zeile == "m":
+            back_to_menu(wg)
+
     while True:
         spalte = input("Spalte: ")
         if is_int(spalte):
             spalte = int(spalte) -1
             if spalte >= 0 and spalte <= 8:
                         break
+        elif spalte == "q":
+            quit(wg)
+        elif spalte == "m":
+            back_to_menu(wg)
+
     while True:
-            eingabe = input("Eingabe: ")
-            if is_int(eingabe):
-                eingabe = int(eingabe)
-                if eingabe >= 0 and eingabe < 10:
-                            break
-            else:
-                eingabe = 0
-                break
+        eingabe = input("Eingabe: ")
+        if is_int(eingabe):
+            eingabe = int(eingabe)
+            if eingabe >= 0 and eingabe < 10:
+                        break
+        elif eingabe == "q":
+            quit(wg)
+        elif eingabe == "m":
+            back_to_menu(wg)
+        else:
+            eingabe = 0
+            break
     if eingabe == 0:
         wg[zeile,spalte] = 0
         pr_field(wg)
     else:
         wg[zeile,spalte] = eingabe
-        pr_field(wg)
     return wg
 def checkkk(wg): #dead
     for i in range(9):
@@ -103,7 +126,7 @@ def checkkk(wg): #dead
     else:
         check = False
     return check
-def checkk(wg):
+def checkk(wg): #muss ausgetauscht werden, ganzes feld mit 5en füllen kommt als korrekt raus
     check1 = np.zeros([9,1], dtype=bool)
     check2 = np.zeros([9,1], dtype=bool)
     check3 = np.zeros([3,3], dtype=bool)
@@ -130,30 +153,96 @@ def checkk(wg):
         check = 0
     return check
 def save_json(data):
-    file_path = "settings.json"
     with open("settings.json", "w") as file:
         json.dump(data, file)
 def read_json():
-    file_path = "settings.json"
     with open("settings.json", "r") as file:
         data = json.load(file)
     return data
-    
+def difficulty():
+    data = read_json()
+    print(f"Momentares Schwierigkeitslevel: {data["difficulty"]}\n")
+    print("1 Leicht")
+    print("2 Mittel")
+    print("3 Schwer")
+    while True:
+        schwierigkeit = input("Neue Schwierigkeit: ")
+        if is_int(schwierigkeit):
+            schwierigkeit = int(schwierigkeit)
+            if schwierigkeit >= 1 and schwierigkeit <= 3:
+                        break
+        elif schwierigkeit == "q":
+            sys.exit()
+        elif schwierigkeit == "m":
+            main()
+    print("hehe schwierigkeit ändern geht noch nicht lol")
+    data["difficulty"] = schwierigkeit
+    save_json(data)
+def reset_all():
+    data = read_json()
+    data["counter"] = 0
+    data["difficulty"] = 1
+    wg = np.zeros([9,9])
+    wg = wg.astype(int)
+    data["wg"] = wg.tolist()
+    save_json(data)
+def reset_wg():
+    data = read_json()
+    wg = np.zeros([9,9])
+    wg = wg.astype(int)
+    data["wg"] = wg.tolist()
+    save_json(data)
+def menu():
+    print("\nSudoku Menu\n")
+    print("Willst du:")
+    print("1 Neues Spiel starten")
+    print("2 Letztes Spiel vortsetzen")
+    print("3 Schwierigkeit ändern")
+    print("4 Daten zurücksetzen")
+    print("m Zum Menu zurück gelangen (geht immer)")
+    print("q Spiel beenden (geht immer)")
+
+    while True:
+        wahl = input("Wahl:")
+        print("")
+        if is_int(wahl):
+            menu_wahl = int(wahl)
+            if menu_wahl == 3:
+                difficulty()
+                main()
+            elif menu_wahl == 4:
+                reset_all()
+                main()
+            elif menu_wahl > 0 and menu_wahl <=4:
+                break
+        elif wahl == "q":
+            sys.exit()
+
+    return menu_wahl
 
 def main():
+    wahl = menu()
     data = read_json()
-    counter = data["counter"]
-    print(f"Erfolgreiche versuche: {counter}")
-    wg = innitnd()
+
+    print(f"Erfolgreiche versuche: {data["counter"]}")
+    if wahl == 1:
+        wg = innit()
+    elif wahl == 2:
+        wg = np.array(data["wg"])
+
     pr_field(wg)
-    while True:
+
+
+
+    while True: # Game
         wg = inpuut(wg)
+        pr_field(wg)
         if np.all(wg != 0):
             check = checkk(wg)
-            if check == 1 or check == 0:
+            if check == 1:
                 print("Eyyy alles richtig!!")
-                counter = counter + 1
-                data["counter"] = counter
+                data["counter"] = data["counter"] + 1
+                reset_wg()
                 save_json(data)
                 break
             if check == 0:
