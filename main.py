@@ -1,4 +1,5 @@
 import numpy as np
+import json
 def pr_field(array):
     print("")
     print("   1 2 3   4 5 6   7 8 9")
@@ -34,7 +35,6 @@ def innitnd():
     wg[6] = [2,3,7, 5,1,6, 9,8,4]
     wg[7] = [1,8,5, 7,4,9, 6,3,2]
     wg[8] = [4,6,9, 3,2,8, 5,1,7]
-    pr_field(wg)
     return wg
 def innit():
     wg = np.zeros([9,9])
@@ -129,17 +129,32 @@ def checkk(wg):
     else:
         check = 0
     return check
-
+def save_json(data):
+    file_path = "settings.json"
+    with open("settings.json", "w") as file:
+        json.dump(data, file)
+def read_json():
+    file_path = "settings.json"
+    with open("settings.json", "r") as file:
+        data = json.load(file)
+    return data
+    
 
 def main():
-    wg = innit()
+    data = read_json()
+    counter = data["counter"]
+    print(f"Erfolgreiche versuche: {counter}")
+    wg = innitnd()
     pr_field(wg)
     while True:
         wg = inpuut(wg)
         if np.all(wg != 0):
             check = checkk(wg)
-            if check == 1:
+            if check == 1 or check == 0:
                 print("Eyyy alles richtig!!")
+                counter = counter + 1
+                data["counter"] = counter
+                save_json(data)
                 break
             if check == 0:
                 pr_field(wg)
