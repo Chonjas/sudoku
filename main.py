@@ -35,7 +35,7 @@ def is_int(value: str) -> bool:
         return True
     except ValueError:
         return False
-def innitnd():
+def innitnd2():
     wg = np.zeros([9,9])
     wg[0] = [7,5,4, 0,9,3, 2,6,1]
     wg[1] = [3,1,8, 2,6,4, 7,9,5]
@@ -47,7 +47,7 @@ def innitnd():
     wg[7] = [1,8,5, 7,4,9, 6,3,2]
     wg[8] = [4,6,9, 3,2,8, 5,1,7]
     return wg
-def innit():
+def innitnd1():
     wg = np.zeros([9,9])
     wg[0] = [0,0,4, 0,9,3, 0,0,0]
     wg[1] = [3,0,0, 0,6,0, 0,9,5]
@@ -220,16 +220,55 @@ def menu():
 
     return menu_wahl
 
+def valid_num(wg, zeile, spalte, num):
+    if num in wg[zeile, :]:
+        return False
+    if num in wg[:, spalte]:
+        return False
+    start_zeile = (zeile//3)*3
+    start_spalte = (spalte//3)*3
+    wg_kl = wg[start_zeile:start_zeile+3, start_spalte:start_spalte+3]
+    if num in wg_kl:
+        return False
+    return True
+def solve_sudoku(wg):
+    for i in range(9):
+        for j in range(9):
+            if wg[i,j] == 0:
+                zahlen = np.arange(1,10)
+                np.random.shuffle(zahlen)
+                for num in zahlen:
+                    if valid_num(wg, i, j, num):
+                        wg[i,j] = num
+                        if solve_sudoku(wg):
+                            return True
+                        wg[i,j] = 0
+                return False
+    return True
+def gen_sudoku():
+    data = read_json()
+    diff = data["difficulty"]
+    wg = np.zeros([9,9], dtype=int)
+    solve_sudoku(wg)
+    return wg
+
+
+
+
+
+
+
+
+
 def main():
     wahl = menu()
     data = read_json()
 
     print(f"Erfolgreiche versuche: {data["counter"]}")
     if wahl == 1:
-        wg = innit()
+        wg = gen_sudoku()
     elif wahl == 2:
         wg = np.array(data["wg"])
-
     pr_field(wg)
 
 
