@@ -231,6 +231,7 @@ def valid_num(wg, zeile, spalte, num):
     if num in wg_kl:
         return False
     return True
+
 def solve_sudoku(wg):
     for i in range(9):
         for j in range(9):
@@ -245,6 +246,7 @@ def solve_sudoku(wg):
                         wg[i,j] = 0
                 return False
     return True
+
 def gen_sudoku():
     data = read_json()
     diff = data["difficulty"]
@@ -252,8 +254,59 @@ def gen_sudoku():
     solve_sudoku(wg)
     return wg
 
+def more_than_one_solution_wrong(wg):
+    true_counter = 0
+    while True:
+        wg_a = wg.copy()
+        wg_b = wg.copy()
+        a = solve_sudoku(wg_a)
+        b = solve_sudoku(wg_b)
+        if a == b:
+            true_counter = true_counter + 1
+        else:
+            return True
+        if true_counter >= 3:
+            return False
+
+def losungsanzahl(wg):
+    for i in range(9):
+        for j in range(9):
+            if wg[i,j] == 0:
+                count = 0
+                for m in range(1,10):
+                    if valid_num(wg, i, j, m):
+                        wg[i,j] = m
+                        count += losungsanzahl(wg)
+                        wg[i,j] = 0
+                        if count >= 2:
+                            return 2
+                return count
+    return 1
+def one_solution_only(wg):
+    wg_kopie = wg.copy()
+    return losungsanzahl(wg_kopie) == 1
 
 
+def innit():
+    print("\n\nNeues Sudoku Grid wird generiert!\n\n")
+    wg = gen_sudoku()
+    positions = np.arange(81)
+    np.random.shuffle(positions)
+    wg_original_size = (9,9)
+    wg_flat = wg.flatten()
+    for i in positions:
+        number = wg_flat[i]
+        wg_flat[i] = 0
+        wg = wg_flat.reshape(wg_original_size)
+        if one_solution_only(wg):
+            wg_flat[i] = 0
+        else:
+            wg_flat[i] = number
+    wg = wg_flat.reshape(wg_original_size)
+    data = read_json()
+    data["wg"] = wg.tolist()
+    save_json(data)
+    return wg
 
 
 
@@ -264,11 +317,11 @@ def main():
     wahl = menu()
     data = read_json()
 
-    print(f"Erfolgreiche versuche: {data["counter"]}")
     if wahl == 1:
-        wg = gen_sudoku()
+        wg = innit()
     elif wahl == 2:
         wg = np.array(data["wg"])
+    print(f"Erfolgreiche versuche: {data["counter"]}")
     pr_field(wg)
 
 
